@@ -1,0 +1,133 @@
+.wizardContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.header {
+  padding: 2rem 3rem;
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.stepperLine {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--border-light);
+  z-index: 1;
+}
+
+.stepperProgress {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  height: 2px;
+  background-color: var(--color-secondary-gold);
+  z-index: 2;
+  transition: width var(--transition-normal);
+}
+
+.stepIndicator {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepCircle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.stepCircle.active {
+  border-color: var(--color-secondary-gold);
+  background-color: var(--color-secondary-gold);
+  color: var(--color-primary-navy);
+}
+
+.stepCircle.completed {
+  border-color: var(--color-status-success);
+  background-color: var(--color-status-success);
+  color: var(--color-white);
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.stepLabel.active {
+  color: var(--text-primary);
+}
+
+.content {
+  padding: 3rem;
+  min-height: 400px;
+}
+
+.stepTitle {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stepSubtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.footer {
+  padding: 2rem 3rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--bg-tertiary);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .stepLabel {
+    display: none;
+  }
+  .content {
+    padding: 2rem 1.5rem;
+  }
+  .footer {
+    padding: 1.5rem;
+  }
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}

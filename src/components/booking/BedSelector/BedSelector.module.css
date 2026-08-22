@@ -1,0 +1,105 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.roomGroup {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.roomHeader {
+  padding: 1.5rem;
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.roomTitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.roomInfo {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.bedList {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.bedItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bedItem:hover {
+  border-color: var(--color-primary-navy);
+  box-shadow: var(--shadow-sm);
+}
+
+.bedItem.selected {
+  border-color: var(--color-secondary-gold);
+  background-color: rgba(212, 175, 55, 0.05);
+  box-shadow: 0 0 0 1px var(--color-secondary-gold);
+}
+
+.bedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bedTitle {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bedAvailability {
+  font-size: 0.875rem;
+  color: var(--color-status-success);
+}
+
+.bedPrice {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+
+.priceValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary-navy);
+}
+
+.priceUnit {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
