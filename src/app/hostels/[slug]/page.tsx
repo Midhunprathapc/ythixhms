@@ -1,154 +1,134 @@
-import React from 'react';
-import Image from 'next/image';
+import { Sparkles, MapPin, Search, Filter, Bed, Wifi, Shield, ArrowRight, CheckCircle2, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { MapPin, CheckCircle2, ChevronRight } from 'lucide-react';
-import { PublicLayout } from '@/components/layouts/PublicLayout';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { FeatureGrid } from '@/components/marketing/FeatureGrid';
-import { propertiesApi, Property } from '@/lib/api/properties';
 
-export default async function PropertyDetailsPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-
-  let property: Property | null = null;
-  try {
-    property = await propertiesApi.getPropertyById(slug);
-  } catch (error) {
-    console.error('Failed to fetch property details:', error);
-  }
-
-  if (!property) {
-    notFound();
-  }
-
-  const propertyName = property.name;
-  const locationStr = property.city ? `${property.address}, ${property.city}` : property.address || 'Location Details Pending';
+export default function HostelDetail({ params }: { params: { slug: string } }) {
+  const hostel = {
+    id: params.slug,
+    name: 'The Grand Residence',
+    location: 'City Center Campus',
+    description: 'Experience premium student living in the heart of the city. The Grand Residence offers unparalleled comfort, community, and convenience with state-of-the-art facilities.',
+    price: 400,
+    beds: 12,
+    images: [
+      '1522708323590-d24dbb6b0267',
+      '1502672260266-1c1f52d11018',
+      '1600596542815-ffad4c1539a9'
+    ],
+    amenities: ['High-Speed Wi-Fi', '24/7 Security', 'En-suite Bathrooms', 'Gym & Fitness Center', 'Study Rooms', 'Cinema Room', 'Laundry Facilities', 'Bike Storage'],
+    rules: ['No smoking indoors', 'Quiet hours 11 PM - 7 AM', 'Guests allowed until 10 PM'],
+  };
 
   return (
-    <PublicLayout>
-      {/* Breadcrumbs */}
-      <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '1rem 2rem', borderBottom: '1px solid var(--border-light)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          <Link href="/" style={{ hover: { color: 'var(--color-primary-navy)' } } as any}>Home</Link>
-          <ChevronRight size={14} />
-          <Link href="/hostels" style={{ hover: { color: 'var(--color-primary-navy)' } } as any}>Accommodations</Link>
-          <ChevronRight size={14} />
-          <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{propertyName}</span>
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-border/50 bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+          <Link href="/hostels" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
+            <ChevronLeft className="h-4 w-4" /> Back to Hostels
+          </Link>
         </div>
-      </div>
+      </header>
 
-      {/* Hero Image Gallery (simplified) */}
-      <div style={{ height: '60vh', minHeight: '400px', position: 'relative' }}>
-        <Image 
-          src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2000"
-          alt={propertyName}
-          fill
-          style={{ objectFit: 'cover' }}
-          priority
-        />
-      </div>
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-10">
+            {/* Hero Gallery */}
+            <div className="grid grid-cols-2 gap-4 h-[500px]">
+              <div className="col-span-2 sm:col-span-1 h-full rounded-2xl overflow-hidden">
+                <img src={`https://images.unsplash.com/photo-${hostel.images[0]}?auto=format&fit=crop&q=80&w=1000`} className="w-full h-full object-cover" alt="Primary" />
+              </div>
+              <div className="hidden sm:grid grid-rows-2 gap-4 h-full">
+                <div className="rounded-2xl overflow-hidden">
+                  <img src={`https://images.unsplash.com/photo-${hostel.images[1]}?auto=format&fit=crop&q=80&w=800`} className="w-full h-full object-cover" alt="Secondary" />
+                </div>
+                <div className="rounded-2xl overflow-hidden relative">
+                  <img src={`https://images.unsplash.com/photo-${hostel.images[2]}?auto=format&fit=crop&q=80&w=800`} className="w-full h-full object-cover" alt="Tertiary" />
+                  <button className="absolute bottom-4 right-4 bg-background/90 px-4 py-2 rounded-lg text-sm font-medium shadow backdrop-blur">
+                    View all photos
+                  </button>
+                </div>
+              </div>
+            </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '4rem' }}>
-        {/* Main Content */}
-        <div>
-          <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              {propertyName}
-            </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
-              <MapPin size={20} />
-              <span>{locationStr}</span>
+            {/* Title & Info */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">Premium</span>
+              </div>
+              <h1 className="font-display text-4xl sm:text-5xl mb-4">{hostel.name}</h1>
+              <p className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="h-5 w-5" /> {hostel.location}
+              </p>
+            </div>
+
+            <hr className="border-border" />
+
+            {/* About */}
+            <section>
+              <h2 className="font-display text-2xl mb-4">About this property</h2>
+              <p className="text-muted-foreground leading-relaxed">{hostel.description}</p>
+            </section>
+
+            {/* Amenities */}
+            <section>
+              <h2 className="font-display text-2xl mb-4">What this place offers</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4">
+                {hostel.amenities.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-muted-foreground">
+                    <CheckCircle2 className="h-5 w-5 text-primary" /> {item}
+                  </div>
+                ))}
+              </div>
+            </section>
+            
+            {/* Rules */}
+            <section>
+              <h2 className="font-display text-2xl mb-4">House Rules</h2>
+              <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                {hostel.rules.map((rule, i) => (
+                  <li key={i}>{rule}</li>
+                ))}
+              </ul>
+            </section>
+
+          </div>
+
+          {/* Sidebar Booking Card */}
+          <div className="relative">
+            <div className="sticky top-24 rounded-2xl border border-border bg-card p-6 shadow-lg">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <span className="text-3xl font-display font-semibold">€{hostel.price}</span>
+                  <span className="text-muted-foreground"> / month</span>
+                </div>
+              </div>
+              
+              <div className="rounded-xl border border-border p-4 mb-6">
+                <div className="flex justify-between items-center mb-2 pb-2 border-b border-border">
+                  <span className="text-sm font-medium">Availability</span>
+                  <span className="text-sm text-green-600 font-semibold flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span> {hostel.beds} beds left
+                  </span>
+                </div>
+                <div className="pt-2 text-xs text-muted-foreground">
+                  Select your move-in date in the next step to confirm exact bed availability.
+                </div>
+              </div>
+
+              <Link href="/booking" className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-md">
+                Reserve a Bed
+              </Link>
+              
+              <p className="text-center text-xs text-muted-foreground mt-4">
+                You won't be charged yet
+              </p>
             </div>
           </div>
 
-          <div style={{ marginBottom: '3rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.75rem', marginBottom: '1rem' }}>About this residence</h2>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '1rem' }}>
-              {/* If we had richText rendering, we'd use it here. For now, fallback to string if available or generic text */}
-              Experience the pinnacle of student living at {propertyName}. Designed specifically for modern international students, this premium residence offers an unparalleled blend of comfort, community, and convenience.
-            </p>
-          </div>
-
-          <div style={{ marginBottom: '3rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.75rem', marginBottom: '1.5rem' }}>House Rules</h2>
-            <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              {[
-                'Quiet hours from 10 PM to 7 AM',
-                'No smoking inside the building',
-                'Guests allowed until midnight',
-                'No pets permitted',
-                'Recycling is mandatory',
-                'Respect common areas'
-              ].map((rule, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', color: 'var(--text-secondary)' }}>
-                  <CheckCircle2 size={20} color="var(--color-status-success)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <span>{rule}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
-
-        {/* Sidebar Sticky Booking Card */}
-        <div>
-          <div style={{ position: 'sticky', top: '100px' }}>
-            <Card shadow="lg" style={{ padding: '2rem' }}>
-              <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-light)' }}>
-                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Starting from</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-                  <span style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--color-primary-navy)' }}>
-                    {property.currency === 'USD' ? '$' : '€'}850
-                  </span>
-                  <span style={{ color: 'var(--text-secondary)' }}>/ month</span>
-                </div>
-              </div>
-              
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
-                  <span>Available Beds</span>
-                  {(property as any).public_visibility ? (
-                    <span style={{ fontWeight: 600, color: 'var(--color-status-success)' }}>Available to book</span>
-                  ) : (
-                    <span style={{ fontWeight: 600, color: 'var(--color-status-danger)' }}>Unavailable</span>
-                  )}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                  <span>Contract Length</span>
-                  <span>44 or 51 weeks</span>
-                </div>
-              </div>
-
-              {(property as any).public_visibility && (
-                <Link href={`/booking?property=${slug}`} style={{ display: 'block' }}>
-                  <Button variant="secondary" size="lg" fullWidth>Select a Bed</Button>
-                </Link>
-              )}
-              
-              <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-gray-400)', marginTop: '1rem' }}>
-                No payment required to check availability.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </div>
-
-      <FeatureGrid
-        title="Residence Amenities"
-        features={property.amenities && property.amenities.length > 0 
-          ? property.amenities.map(a => ({ icon: 'wifi', title: a.name, description: 'Provided amenity' }))
-          : [
-              { icon: 'wifi', title: 'Enterprise Wi-Fi', description: 'Gigabit fiber internet available.' },
-              { icon: 'shield', title: '24/7 Security', description: 'Biometric access control and CCTV.' },
-              { icon: 'gym', title: 'Fitness Center', description: 'Fully equipped modern gym.' },
-            ]
-        }
-      />
-    </PublicLayout>
+      </main>
+    </div>
   );
 }

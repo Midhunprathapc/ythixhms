@@ -1,71 +1,59 @@
-import React from 'react';
-import { StudentLayout } from '@/components/layouts/StudentLayout';
-import { Card } from '@/components/ui/Card';
-import { PaymentRow } from '@/components/portal/PaymentRow';
-import { paymentsApi } from '@/lib/api/payments';
+import { CreditCard, Download } from 'lucide-react';
 
-export default async function PaymentsPage() {
-  let invoices = [];
-  try {
-    const res = await paymentsApi.getStudentPayments();
-    invoices = res.docs;
-  } catch (error) {
-    console.error('Failed to fetch invoices:', error);
-  }
-
-  // Map to component props
-  const formattedPayments = invoices.map(inv => ({
-    id: inv.invoice_number || inv.id,
-    description: inv.line_items?.[0]?.description || 'Invoice',
-    amount: inv.amount_due,
-    date: new Date(inv.due_date).toLocaleDateString(),
-    status: inv.status
-  }));
+export default function StudentPayments() {
+  const payments = [
+    { id: 'INV-1002', desc: 'Rent - October 2026', amount: 400, status: 'Pending', due: 'Oct 1, 2026' },
+    { id: 'INV-1001', desc: 'Rent - September 2026', amount: 400, status: 'Paid', due: 'Sep 1, 2026' },
+    { id: 'INV-1000', desc: 'Security Deposit', amount: 400, status: 'Paid', due: 'Aug 25, 2026' },
+  ];
 
   return (
-    <StudentLayout>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-          Payments & Invoices
-        </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Manage your rent payments, deposits, and download invoices.</p>
+    <div className="max-w-4xl space-y-8 pb-10">
+      <div>
+        <h1 className="font-display text-3xl font-medium mb-1">Payments</h1>
+        <p className="text-muted-foreground text-sm">Track your rent, deposits, and outstanding balances.</p>
       </div>
 
-      <Card style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '2fr 1fr 1fr 1fr auto', 
-          alignItems: 'center', 
-          padding: '1rem 1.25rem', 
-          backgroundColor: 'var(--bg-tertiary)',
-          borderBottom: '1px solid var(--border-light)',
-          fontSize: '0.75rem',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          color: 'var(--text-secondary)',
-          fontWeight: 600
-        }}>
-          <div>Description</div>
-          <div>Date</div>
-          <div>Amount</div>
-          <div>Status</div>
-          <div style={{ paddingRight: '1rem' }}>Actions</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Outstanding Balance</h3>
+          <p className="text-3xl font-display text-orange-600 font-semibold">€400.00</p>
         </div>
-        
-        <div>
-          {formattedPayments.length > 0 ? formattedPayments.map(payment => (
-            <PaymentRow key={payment.id} {...payment} />
-          )) : (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-              No payments found.
-            </div>
-          )}
-        </div>
-      </Card>
-      
-      <div style={{ marginTop: '2rem', padding: '1.5rem', backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-        <strong>Note on Cash Payments:</strong> If you are paying your rent via cash at the reception, please allow up to 24 hours for your invoice status to update from "Pending" to "Paid".
       </div>
-    </StudentLayout>
+
+      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-secondary/5 px-6 py-4 border-b border-border">
+          <h2 className="font-medium text-lg">Payment History</h2>
+        </div>
+        <div className="divide-y divide-border">
+          {payments.map((payment) => (
+            <div key={payment.id} className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="flex items-center gap-4">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                  payment.status === 'Paid' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'
+                }`}>
+                  <CreditCard className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-medium">{payment.desc}</h3>
+                  <p className="text-xs text-muted-foreground">{payment.id} · Due: {payment.due}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <span className="font-semibold text-lg">€{payment.amount.toFixed(2)}</span>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${
+                  payment.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                }`}>
+                  {payment.status}
+                </span>
+                <button className="text-muted-foreground hover:text-primary p-2">
+                  <Download className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

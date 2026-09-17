@@ -1,20 +1,16 @@
-import React from 'react';
-import { StudentLayout } from '@/components/layouts/StudentLayout';
-import { Card } from '@/components/ui/Card';
+import { Bell } from 'lucide-react';
 
-export default function NotificationsPage() {
+export default function StudentNotifications() {
   return (
-    <StudentLayout>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-          Notifications
-        </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>All recent alerts and announcements.</p>
+    <div className="max-w-4xl space-y-8 pb-10">
+      <div>
+        <h1 className="font-display text-3xl font-medium mb-1">Notifications</h1>
+        <p className="text-muted-foreground text-sm">Updates regarding your stay and payments.</p>
       </div>
-      
-      <Card style={{ padding: '3rem', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-secondary)' }}>You have no new notifications.</p>
-      </Card>
-    </StudentLayout>
+      <div className="bg-card border border-border rounded-2xl shadow-sm p-8 text-center text-muted-foreground">
+        <Bell className="h-10 w-10 mx-auto mb-4 opacity-50" />
+        <p>You're all caught up!</p>
+      </div>
+    </div>
   );
 }

@@ -1,86 +1,83 @@
-import React from 'react';
-import { CreditCard, Wrench, Calendar, AlertCircle } from 'lucide-react';
-import { StudentLayout } from '@/components/layouts/StudentLayout';
-import { StatCard } from '@/components/portal/StatCard';
-import { Card } from '@/components/ui/Card';
-import { studentPortalApi } from '@/lib/api/studentPortal';
+import { AlertCircle, CreditCard, Calendar, FileText, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
-export default async function StudentDashboardPage() {
-  let dashboardData: any = { activeTenancy: null, announcements: [], events: [], maintenanceTicketsCount: 0 };
-  
-  try {
-    const res = await studentPortalApi.getDashboardData();
-    dashboardData = res || dashboardData;
-  } catch (error) {
-    console.error('Failed to fetch student dashboard:', error);
-  }
-
-  const { activeTenancy, announcements, maintenanceTicketsCount } = dashboardData;
-
-  const endDate = activeTenancy ? new Date(activeTenancy.end_date).toLocaleDateString() : 'N/A';
-  
+export default function StudentDashboard() {
   return (
-    <StudentLayout>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-          Welcome back
-        </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Here is what's happening with your stay today.</p>
+    <div className="max-w-4xl space-y-8 pb-10">
+      <div>
+        <h1 className="font-display text-3xl font-medium mb-1">Welcome back, John</h1>
+        <p className="text-muted-foreground text-sm">Here's an overview of your stay at The Grand Residence.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-        <StatCard 
-          title="Current Balance" 
-          value="$0.00" 
-          subtitle="No payment due at this time"
-          icon={<CreditCard size={20} />}
-        />
-        <StatCard 
-          title="Next Rent Due" 
-          value="Oct 1, 2026" 
-          subtitle="$850.00"
-          icon={<Calendar size={20} />}
-        />
-        <StatCard 
-          title="Active Tickets" 
-          value={maintenanceTicketsCount.toString()} 
-          subtitle="Maintenance"
-          icon={<Wrench size={20} />}
-        />
-        <StatCard 
-          title="Contract Ends" 
-          value={endDate} 
-          subtitle={activeTenancy ? `${activeTenancy.payment_frequency} payments` : 'No active contract'}
-          icon={<AlertCircle size={20} />}
-        />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        {/* Important Announcements */}
-        <div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Announcements</h2>
-          {announcements.length > 0 ? announcements.map((notice: any) => (
-            <Card key={notice.id} style={{ padding: '1.5rem', borderLeft: `4px solid ${notice.priority === 'HIGH' ? 'var(--color-status-danger)' : 'var(--color-secondary-gold)'}`, marginBottom: '1rem' }}>
-              <h4 style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{notice.title}</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                {notice.content}
-              </p>
-            </Card>
-          )) : (
-            <p style={{ color: 'var(--text-secondary)' }}>No recent announcements.</p>
-          )}
-        </div>
-
-        {/* Upcoming Events */}
-        <div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Community Events</h2>
-          <Card style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>No upcoming events this week.</p>
+      {/* Current Stay Card */}
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10"></div>
+        <div className="p-6 sm:p-8">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <span className="text-xs uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-1 rounded">Current Stay</span>
+              <h2 className="font-display text-2xl mt-3">The Grand Residence</h2>
+              <p className="text-sm text-muted-foreground mt-1">City Center Campus</p>
             </div>
-          </Card>
+            <div className="text-right">
+              <div className="text-sm text-muted-foreground mb-1">Room / Bed</div>
+              <div className="font-semibold text-lg">201 / A</div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 border-t border-border pt-6 mt-4">
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">Check-in</div>
+              <div className="font-medium text-sm">Sep 1, 2026</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">Check-out</div>
+              <div className="font-medium text-sm">Jun 30, 2027</div>
+            </div>
+          </div>
         </div>
       </div>
-    </StudentLayout>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Next Payment */}
+        <Link href="/student/payments" className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:border-primary transition-colors group">
+          <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <CreditCard className="w-5 h-5" />
+          </div>
+          <h3 className="font-semibold mb-1">Next Payment</h3>
+          <p className="text-2xl font-display mb-1">€400.00</p>
+          <p className="text-xs text-orange-600 font-medium">Due in 5 days (Oct 1)</p>
+        </Link>
+
+        {/* Pending Documents */}
+        <Link href="/student/documents" className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:border-primary transition-colors group">
+          <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <AlertCircle className="w-5 h-5" />
+          </div>
+          <h3 className="font-semibold mb-1">Action Required</h3>
+          <p className="text-sm text-muted-foreground mb-3">Please upload your Student ID to verify your enrollment status.</p>
+          <span className="text-xs font-semibold text-red-600 flex items-center gap-1">
+            Upload now <ChevronRight className="w-3 h-3" />
+          </span>
+        </Link>
+      </div>
+
+      {/* Quick Links */}
+      <h3 className="font-medium text-lg mt-8 mb-4">Quick Actions</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link href="/student/maintenance" className="bg-card border border-border rounded-xl p-4 flex items-center justify-between hover:bg-secondary/5 transition-colors">
+          <span className="text-sm font-medium">Report Issue</span>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </Link>
+        <Link href="/student/contracts" className="bg-card border border-border rounded-xl p-4 flex items-center justify-between hover:bg-secondary/5 transition-colors">
+          <span className="text-sm font-medium">View Contract</span>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </Link>
+        <Link href="/student/room" className="bg-card border border-border rounded-xl p-4 flex items-center justify-between hover:bg-secondary/5 transition-colors">
+          <span className="text-sm font-medium">My Roommates</span>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </Link>
+      </div>
+    </div>
   );
 }

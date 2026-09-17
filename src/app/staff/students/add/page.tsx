@@ -1,0 +1,521 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Camera, ArrowLeft, User, Phone, MapPin, GraduationCap, HeartPulse, Save, Home, Lock } from 'lucide-react';
+
+export default function AddStudentPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
+  const isEditing = !!editId;
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    dateOfBirth: '',
+    gender: '',
+    email: '',
+    phone: '',
+    address: '',
+    course: '',
+    yearOfStudy: '',
+    emergencyName: '',
+    emergencyPhone: '',
+    emergencyPhone: '',
+    emergencyRelation: '',
+    password: ''
+  });
+
+  const [properties, setProperties] = useState<any[]>([]);
+  const [roomOverrides, setRoomOverrides] = useState<Record<string, any>>({});
+  
+  const [selectedPropId, setSelectedPropId] = useState('');
+  const [selectedFloor, setSelectedFloor] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState('');
+  const [selectedBed, setSelectedBed] = useState('');
+
+  useEffect(() => {
+    let loadedProps: any[] = [];
+    const savedProps = localStorage.getItem('hms_properties');
+    if (savedProps) {
+        loadedProps = JSON.parse(savedProps);
+        setProperties(loadedProps);
+    }
+    
+    const savedOverrides = localStorage.getItem('hms_room_overrides');
+    if (savedOverrides) {
+        setRoomOverrides(JSON.parse(savedOverrides));
+    }
+
+    if (isEditing) {
+      const saved = localStorage.getItem('hms_students');
+      if (saved) {
+        const students = JSON.parse(saved);
+        const student = students.find((s: any) => s.id.toString() === editId);
+        if (student) {
+          const [firstName, ...lastNameParts] = (student.name || '').split(' ');
+          setFormData({
+            firstName: firstName || '',
+            lastName: lastNameParts.join(' ') || '',
+            dateOfBirth: student.dateOfBirth || '',
+            gender: student.gender || '',
+            email: student.email || '',
+            phone: student.phone || '',
+            address: student.address || '',
+            course: student.course || '',
+            yearOfStudy: student.yearOfStudy || '',
+            emergencyName: student.emergencyName || '',
+            emergencyPhone: student.emergencyPhone || '',
+            emergencyRelation: student.emergencyRelation || '',
+            password: student.password || ''
+          });
+
+          if (student.property && student.room && student.room !== 'Unassigned') {
+            const prop = loadedProps.find(p => p.name === student.property);
+            if (prop) {
+                setSelectedPropId(prop.id.toString());
+                const match = student.room.match(/Room (\d)(\d+) - Bed ([A-Z0-9]+)/i);
+                if (match) {
+                    setSelectedFloor(match[1]);
+                    setSelectedRoom(match[1] + match[2]);
+                    setSelectedBed(match[3]);
+                }
+            }
+          }
+        }
+      }
+    } else {
+      const fromRoom = searchParams.get('from_room');
+      if (fromRoom) {
+        const pId = searchParams.get('property_id');
+        const floor = searchParams.get('floor');
+        const bed = searchParams.get('bed');
+        
+        if (pId) setSelectedPropId(pId);
+        if (floor) setSelectedFloor(floor);
+        if (fromRoom) setSelectedRoom(fromRoom);
+        if (bed !== null) {
+            setSelectedBed(String.fromCharCode(65 + parseInt(bed)));
+        }
+      }
+    }
+  }, [editId, isEditing, searchParams]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Get existing students
+    const saved = localStorage.getItem('hms_students');
+    let currentStudents: any[] = [];
+    if (saved) {
+      currentStudents = JSON.parse(saved);
+    }
+    
+    const prop = properties.find(p => p.id.toString() === selectedPropId);
+    const propName = prop ? prop.name : undefined;
+    const roomStr = (selectedPropId && selectedFloor && selectedRoom && selectedBed) 
+        ? `Room ${selectedRoom} - Bed ${selectedBed}` : undefined;
+
+    let studentIdToSave = isEditing ? editId : Date.now().toString();
+
+    let oldRoomInfo = null;
+    if (isEditing) {
+      const oldStudent = currentStudents.find((s: any) => s.id.toString() === editId);
+      if (oldStudent && oldStudent.room && oldStudent.room !== 'Unassigned') {
+        oldRoomInfo = { room: oldStudent.room, property: oldStudent.property };
+      }
+    }
+
+    if (isEditing) {
+      currentStudents = currentStudents.map((s: any) => {
+        if (s.id.toString() === editId) {
+          return {
+            ...s,
+            name: `${formData.firstName} ${formData.lastName}`.trim(),
+            email: formData.email,
+            phone: formData.phone,
+            dateOfBirth: formData.dateOfBirth,
+            gender: formData.gender,
+            address: formData.address,
+            course: formData.course,
+            yearOfStudy: formData.yearOfStudy,
+            emergencyName: formData.emergencyName,
+            emergencyPhone: formData.emergencyPhone,
+            emergencyRelation: formData.emergencyRelation,
+            password: formData.password,
+            room: roomStr || 'Unassigned',
+            property: propName || undefined,
+            status: roomStr ? 'Active' : 'Active'
+          };
+        }
+        return s;
+      });
+      localStorage.setItem('hms_students', JSON.stringify(currentStudents));
+    } else {
+      const newStudent = {
+        id: parseInt(studentIdToSave!),
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        phone: formData.phone,
+        room: roomStr || 'Unassigned',
+        property: propName || undefined,
+        status: roomStr ? 'Active' : 'Active',
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        address: formData.address,
+        course: formData.course,
+        yearOfStudy: formData.yearOfStudy,
+        emergencyName: formData.emergencyName,
+        emergencyPhone: formData.emergencyPhone,
+        emergencyRelation: formData.emergencyRelation,
+        password: formData.password
+      };
+      
+      // Save back to localStorage
+      localStorage.setItem('hms_students', JSON.stringify([...currentStudents, newStudent]));
+    }
+
+    const currentOverrides = { ...roomOverrides };
+    let overridesChanged = false;
+
+    if (oldRoomInfo && oldRoomInfo.room !== roomStr) {
+      const p = properties.find(pr => pr.name === oldRoomInfo.property);
+      if (p) {
+        const match = oldRoomInfo.room.match(/Room (\d)(\d+) - Bed ([A-Z0-9]+)/i);
+        if (match) {
+          const oldPropId = p.id.toString();
+          const oldRoomNum = match[1] + match[2];
+          const oldBedStr = match[3];
+          const overrideKey = `${oldPropId}-${oldRoomNum}`;
+          
+          if (currentOverrides[overrideKey]) {
+            const rOverride = currentOverrides[overrideKey];
+            const bIndex = typeof oldBedStr === 'string' && oldBedStr.match(/[A-Z]/i) 
+                ? oldBedStr.toUpperCase().charCodeAt(0) - 65 
+                : parseInt(oldBedStr) - 1;
+                
+            if (rOverride.bedStatuses && rOverride.bedStatuses[bIndex] !== undefined) {
+              const newStatuses = [...rOverride.bedStatuses];
+              const newOccupants = [...(rOverride.bedOccupants || [])];
+              newStatuses[bIndex] = false;
+              newOccupants[bIndex] = null;
+              
+              const newFilled = newStatuses.filter(v => v).length;
+              const newFree = rOverride.beds - newFilled;
+              let newStatus = rOverride.status || 'available';
+              if (newFilled === rOverride.beds && rOverride.beds > 0) {
+                newStatus = 'occupied';
+              } else if (newFree > 0 && newStatus !== 'maintenance') {
+                newStatus = 'available';
+              }
+              
+              currentOverrides[overrideKey] = {
+                ...rOverride,
+                bedStatuses: newStatuses,
+                bedOccupants: newOccupants,
+                filledBeds: newFilled,
+                freeBeds: newFree,
+                status: newStatus
+              };
+              overridesChanged = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (selectedPropId && selectedFloor && selectedRoom && selectedBed) {
+      const overrideKey = `${selectedPropId}-${selectedRoom}`;
+      const roomOverride = currentOverrides[overrideKey] || {};
+      const bedsCount = roomOverride.beds || (prop?.bedsPerFloor ? prop.bedsPerFloor[parseInt(selectedFloor) - 1] : prop?.bedsPerRoom) || 0;
+      
+      let bedStatuses = roomOverride.bedStatuses ? [...roomOverride.bedStatuses] : Array(bedsCount).fill(false);
+      let bedOccupants = roomOverride.bedOccupants ? [...roomOverride.bedOccupants] : Array(bedsCount).fill(null);
+      
+      const bedIndex = typeof selectedBed === 'string' && selectedBed.match(/[A-Z]/i) 
+          ? selectedBed.toUpperCase().charCodeAt(0) - 65 
+          : parseInt(selectedBed) - 1;
+      
+      if (bedIndex >= 0 && bedIndex < bedsCount) {
+         bedStatuses[bedIndex] = true;
+         bedOccupants[bedIndex] = parseInt(studentIdToSave!);
+         
+         const newFilled = bedStatuses.filter(v => v).length;
+         const newFree = bedsCount - newFilled;
+         let newStatus = roomOverride.status || 'available';
+         if (newFilled === bedsCount && bedsCount > 0) {
+           newStatus = 'occupied';
+         } else if (newFree > 0 && newStatus !== 'maintenance') {
+           newStatus = 'available';
+         }
+         
+         currentOverrides[overrideKey] = {
+             ...roomOverride,
+             beds: bedsCount,
+             bedStatuses,
+             bedOccupants,
+             filledBeds: newFilled,
+             freeBeds: newFree,
+             status: newStatus
+         };
+         overridesChanged = true;
+      }
+    }
+
+    if (overridesChanged) {
+        localStorage.setItem('hms_room_overrides', JSON.stringify(currentOverrides));
+    }
+
+    if (isEditing) {
+        router.push(`/staff/students/${editId}`);
+    } else {
+        const returnRoomEdit = sessionStorage.getItem('hms_return_room_edit');
+        if (returnRoomEdit) {
+            sessionStorage.setItem('hms_new_assigned_student_id', studentIdToSave!);
+            router.push('/staff/properties');
+        } else {
+            router.push('/staff/students');
+        }
+    }
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-6 pb-12">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Link href={isEditing ? `/staff/students/${editId}` : "/staff/students"} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{isEditing ? "Edit Student Profile" : "Register New Student"}</h1>
+          <p className="text-sm text-gray-500 mt-1">{isEditing ? "Update student details and save changes." : "Enter complete student details to create a new profile."}</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Left Column: Photo & Quick Actions */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-6 flex flex-col items-center border-b border-gray-100 bg-gray-50/50">
+                <div className="relative group cursor-pointer mb-4">
+                  <div className="w-32 h-32 rounded-full border-4 border-white shadow-md bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <User className="w-12 h-12 text-gray-300" />
+                  </div>
+                  <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Camera className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <h3 className="font-semibold text-gray-900">Student Photo</h3>
+                <p className="text-xs text-gray-500 mt-1 text-center">Click to upload or drag and drop<br/>SVG, PNG, JPG or GIF (max. 2MB)</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Detailed Forms */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* Personal Details */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                <User className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Personal Details</h3>
+              </div>
+              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
+                  <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" placeholder="e.g. John" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Last Name <span className="text-red-500">*</span></label>
+                  <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" placeholder="e.g. Doe" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Date of Birth</label>
+                  <input name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Gender</label>
+                  <select name="gender" value={formData.gender} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">Password <span className="text-gray-400 font-normal">(for student portal)</span></label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="w-4 h-4 text-gray-400" />
+                    </div>
+                    <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="Enter password" className="w-full border border-gray-300 rounded-lg pl-10 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Room Assignment */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                <Home className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Room Assignment</h3>
+              </div>
+              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Property</label>
+                  <select 
+                    value={selectedPropId} 
+                    onChange={e => { setSelectedPropId(e.target.value); setSelectedFloor(''); setSelectedRoom(''); setSelectedBed(''); }} 
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value="">Select Property</option>
+                    {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Floor</label>
+                  <select 
+                    value={selectedFloor} 
+                    onChange={e => { setSelectedFloor(e.target.value); setSelectedRoom(''); setSelectedBed(''); }} 
+                    disabled={!selectedPropId}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                  >
+                    <option value="">Select Floor</option>
+                    {selectedPropId && Array.from({ length: properties.find(p => p.id.toString() === selectedPropId)?.floors || 0 }).map((_, i) => (
+                      <option key={i+1} value={i+1}>Floor {i+1}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Room</label>
+                  <select 
+                    value={selectedRoom} 
+                    onChange={e => { setSelectedRoom(e.target.value); setSelectedBed(''); }}
+                    disabled={!selectedFloor}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                  >
+                    <option value="">Select Room</option>
+                    {selectedFloor && Array.from({ length: properties.find(p => p.id.toString() === selectedPropId)?.roomsPerFloor?.[parseInt(selectedFloor) - 1] || 0 }).map((_, i) => {
+                      const rNum = `${selectedFloor}0${i+1}`;
+                      return <option key={rNum} value={rNum}>Room {rNum}</option>
+                    })}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Bed</label>
+                  <select 
+                    value={selectedBed} 
+                    onChange={e => setSelectedBed(e.target.value)}
+                    disabled={!selectedRoom}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                  >
+                    <option value="">Select Bed</option>
+                    {selectedRoom && (() => {
+                      const prop = properties.find(p => p.id.toString() === selectedPropId);
+                      const override = roomOverrides[`${selectedPropId}-${selectedRoom}`];
+                      const beds = override?.beds || (prop?.bedsPerFloor ? prop.bedsPerFloor[parseInt(selectedFloor) - 1] : prop?.bedsPerRoom) || 0;
+                      return Array.from({ length: beds }).map((_, i) => (
+                        <option key={i+1} value={String.fromCharCode(65 + i)}>Bed {String.fromCharCode(65 + i)}</option>
+                      ));
+                    })()}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                <Phone className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Contact Information</h3>
+              </div>
+              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
+                  <input required name="email" value={formData.email} onChange={handleChange} type="email" placeholder="john@example.com" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
+                  <input required name="phone" value={formData.phone} onChange={handleChange} type="tel" placeholder="+1 234 567 8900" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Home Address</label>
+                  <textarea name="address" value={formData.address} onChange={handleChange} rows={3} placeholder="Full residential address..." className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                </div>
+              </div>
+            </div>
+
+            {/* Academic Information */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Academic Information</h3>
+              </div>
+              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Course / Major</label>
+                  <input name="course" value={formData.course} onChange={handleChange} type="text" placeholder="e.g. Computer Science" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Year of Study</label>
+                  <select name="yearOfStudy" value={formData.yearOfStudy} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="">Select Year</option>
+                    <option value="1">First Year</option>
+                    <option value="2">Second Year</option>
+                    <option value="3">Third Year</option>
+                    <option value="4">Fourth Year</option>
+                    <option value="5">Postgraduate</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                <HeartPulse className="w-4 h-4 text-red-500" />
+                <h3 className="font-semibold text-gray-900">Emergency Contact</h3>
+              </div>
+              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Contact Name <span className="text-red-500">*</span></label>
+                  <input required name="emergencyName" value={formData.emergencyName} onChange={handleChange} type="text" placeholder="Jane Doe" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
+                  <input required name="emergencyPhone" value={formData.emergencyPhone} onChange={handleChange} type="tel" placeholder="+1 234 567 8900" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">Relationship</label>
+                  <input name="emergencyRelation" value={formData.emergencyRelation} onChange={handleChange} type="text" placeholder="e.g. Mother, Father, Guardian" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+          <Link href={isEditing ? `/staff/students/${editId}` : "/staff/students"} className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+            Cancel
+          </Link>
+          <button type="submit" className="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
+            <Save className="w-4 h-4" /> {isEditing ? "Update Student Record" : "Save Student Record"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

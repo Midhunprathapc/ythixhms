@@ -1,83 +1,87 @@
-import React from 'react';
+import { CheckCircle2, ChevronRight, MessageCircle, FileText, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { CheckCircle, AlertCircle } from 'lucide-react';
-import { PublicLayout } from '@/components/layouts/PublicLayout';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { bookingsApi } from '@/lib/api/bookings';
 
-export default async function BookingConfirmationPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  let booking = null;
-  try {
-    booking = await bookingsApi.getBooking(id);
-  } catch (error) {
-    console.error('Failed to fetch booking confirmation:', error);
-  }
-
-  if (!booking) {
-    return (
-      <PublicLayout>
-        <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '5rem 2rem', minHeight: 'calc(100vh - 80px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Card shadow="lg" style={{ maxWidth: '600px', width: '100%', padding: '3rem 2rem', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-              <AlertCircle size={64} color="var(--color-status-danger)" />
-            </div>
-            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-              Booking Not Found
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', marginBottom: '2rem', lineHeight: 1.6 }}>
-              We couldn't locate booking ID <strong>{id}</strong>.
-            </p>
-            <Link href="/" style={{ width: '100%' }}>
-              <Button size="lg" fullWidth>Return to Home</Button>
-            </Link>
-          </Card>
-        </div>
-      </PublicLayout>
-    );
-  }
-
+export default function BookingSuccess({ params }: { params: { id: string } }) {
   return (
-    <PublicLayout>
-      <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '5rem 2rem', minHeight: 'calc(100vh - 80px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Card shadow="lg" style={{ maxWidth: '600px', width: '100%', padding: '3rem 2rem', textAlign: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-            <CheckCircle size={64} color="var(--color-status-success)" />
+    <div className="w-full max-w-full min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      <div className="bg-card border border-border rounded-3xl p-8 sm:p-12 max-w-2xl w-full shadow-lg relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute top-0 left-0 w-full h-32 bg-primary/5 -z-10 rounded-t-3xl"></div>
+        
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center shadow-inner">
+            <CheckCircle2 className="w-10 h-10" />
           </div>
-          
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-            Booking Requested!
-          </h1>
-          
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', marginBottom: '2rem', lineHeight: 1.6 }}>
-            Thank you for choosing HMS. Your booking request has been received and is currently <strong style={{ color: 'var(--color-status-warning)' }}>{booking.doc?.status?.replace(/_/g, ' ') || 'PENDING'}</strong>.
-          </p>
+        </div>
+        
+        <div className="text-center mb-10">
+          <h1 className="font-display text-3xl sm:text-4xl mb-2">Booking Confirmed!</h1>
+          <p className="text-muted-foreground">Your reservation is secured. We're excited to welcome you.</p>
+          <div className="mt-4 inline-flex items-center gap-2 bg-secondary/10 px-4 py-2 rounded-full font-medium text-sm">
+            Booking ID: <span className="font-semibold font-mono">{params.id}</span>
+          </div>
+        </div>
 
-          <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '3rem' }}>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Your Booking ID
-            </p>
-            <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-primary-navy)', letterSpacing: '2px' }}>
-              {id}
-            </p>
+        <div className="bg-background rounded-2xl border border-border p-6 mb-8">
+          <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">Booking Summary</h3>
+          <div className="grid grid-cols-2 gap-y-4 text-sm">
+            <div>
+              <span className="block text-muted-foreground mb-1">Property</span>
+              <span className="font-medium">The Grand Residence</span>
+            </div>
+            <div>
+              <span className="block text-muted-foreground mb-1">Room / Bed</span>
+              <span className="font-medium">Room 201, Bed A</span>
+            </div>
+            <div>
+              <span className="block text-muted-foreground mb-1">Check-in</span>
+              <span className="font-medium">Sep 1, 2026</span>
+            </div>
+            <div>
+              <span className="block text-muted-foreground mb-1">Status</span>
+              <span className="inline-flex items-center gap-1 text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded">
+                Paid & Confirmed
+              </span>
+            </div>
           </div>
+        </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <Link href="/student" style={{ width: '100%' }}>
-              <Button size="lg" fullWidth>Go to Student Portal</Button>
-            </Link>
-            <Link href="/" style={{ width: '100%' }}>
-              <Button variant="ghost" size="lg" fullWidth>Return to Home</Button>
-            </Link>
-          </div>
-        </Card>
+        <div className="space-y-4">
+          <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Next Steps</h3>
+          
+          <Link href="/student" className="flex items-center justify-between p-4 rounded-xl border border-border hover:border-primary transition-colors bg-background group">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-sm group-hover:text-primary transition-colors">Access Student Portal</div>
+                <div className="text-xs text-muted-foreground">View your contract and upload remaining documents</div>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </Link>
+
+          <a href="#" className="flex items-center justify-between p-4 rounded-xl border border-border hover:border-[#25D366] transition-colors bg-background group">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#25D366]">
+                <MessageCircle className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-sm group-hover:text-[#25D366] transition-colors">WhatsApp Support</div>
+                <div className="text-xs text-muted-foreground">Connect with your property manager</div>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-[#25D366] transition-colors" />
+          </a>
+        </div>
+        
+        <div className="mt-10 text-center">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-medium hover:text-primary transition-colors">
+            Return to Homepage <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
-    </PublicLayout>
+    </div>
   );
 }

@@ -1,98 +1,86 @@
-import React from 'react';
-import { Home, Key, MapPin } from 'lucide-react';
-import { StudentLayout } from '@/components/layouts/StudentLayout';
-import { Card } from '@/components/ui/Card';
-import Image from 'next/image';
+import { Bed, Users, Shield } from 'lucide-react';
 
-export default function MyRoomPage() {
+export default function StudentRoom() {
   return (
-    <StudentLayout>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-          My Room
-        </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>View your accommodation details and connect with roommates.</p>
+    <div className="max-w-4xl space-y-8 pb-10">
+      <div>
+        <h1 className="font-display text-3xl font-medium mb-1">My Room</h1>
+        <p className="text-muted-foreground text-sm">View your room layout and roommate details.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <Card style={{ padding: '0', overflow: 'hidden' }}>
-            <div style={{ height: '200px', position: 'relative', backgroundColor: 'var(--bg-tertiary)' }}>
-              <Image 
-                src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1000"
-                alt="Room"
-                fill
-                style={{ objectFit: 'cover' }}
-              />
+      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-secondary/5 px-6 py-4 border-b border-border flex justify-between items-center">
+          <div>
+            <h2 className="font-display text-xl">The Grand Residence</h2>
+            <p className="text-sm text-muted-foreground">Room 201</p>
+          </div>
+          <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+            Active Tenancy
+          </div>
+        </div>
+        <div className="p-6 sm:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Visual Room Map */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-sm uppercase tracking-wider font-semibold text-muted-foreground mb-4">Room Layout</h3>
+              <div className="border border-border rounded-xl p-4 bg-background grid grid-cols-2 gap-4 relative">
+                
+                {/* Bed A - You */}
+                <div className="border-2 border-primary bg-primary/5 rounded-lg p-4 flex flex-col items-center justify-center text-center h-32 relative">
+                  <div className="absolute -top-3 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full shadow-sm">You</div>
+                  <Bed className="h-6 w-6 text-primary mb-2" />
+                  <span className="font-semibold text-primary">Bed A</span>
+                </div>
+
+                {/* Bed B - Occupied */}
+                <div className="border border-border bg-secondary/5 rounded-lg p-4 flex flex-col items-center justify-center text-center h-32">
+                  <Bed className="h-6 w-6 text-muted-foreground mb-2" />
+                  <span className="font-medium text-gray-700">Bed B</span>
+                  <span className="text-xs text-muted-foreground mt-1">Michael S.</span>
+                </div>
+
+                {/* Bed C - Available */}
+                <div className="border border-dashed border-green-300 bg-green-50 rounded-lg p-4 flex flex-col items-center justify-center text-center h-32 col-span-2">
+                  <span className="text-xs text-green-600 font-semibold uppercase tracking-wider">Available</span>
+                  <span className="text-xs text-green-600/70 mt-1">Bed C</span>
+                </div>
+
+              </div>
             </div>
-            <div style={{ padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                <div>
-                  <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', marginBottom: '0.25rem' }}>The Grand Plaza Residence</h2>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                    <MapPin size={16} />
-                    Central Downtown District
+
+            {/* Room Details */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm uppercase tracking-wider font-semibold text-muted-foreground mb-3">Roommates</h3>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                    <Users className="h-5 w-5 text-secondary" />
+                  </div>
+                  <div>
+                    <div className="font-medium">Michael Smith</div>
+                    <div className="text-xs text-muted-foreground">Computer Science, Yr 2</div>
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Room / Bed</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-primary-navy)' }}>101-A</div>
-                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', borderTop: '1px solid var(--border-light)', paddingTop: '1.5rem' }}>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Room Type</span>
-                  <span style={{ fontWeight: 500 }}>2-Bed Shared (En-suite)</span>
-                </div>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Wi-Fi Network</span>
-                  <span style={{ fontWeight: 500 }}>HMS_Premium_5G</span>
-                </div>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Contract Start</span>
-                  <span style={{ fontWeight: 500 }}>Sep 1, 2026</span>
-                </div>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Contract End</span>
-                  <span style={{ fontWeight: 500 }}>Aug 31, 2027</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+              <hr className="border-border" />
 
-        <div>
-          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Your Roommate</h3>
-          <Card style={{ padding: '1.5rem', textAlign: 'center' }}>
-            <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', margin: '0 auto 1rem', overflow: 'hidden', position: 'relative' }}>
-              <Image 
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"
-                alt="Roommate"
-                fill
-                style={{ objectFit: 'cover' }}
-              />
-            </div>
-            <h4 style={{ fontWeight: 600, fontSize: '1.125rem', marginBottom: '0.25rem' }}>Michael Chen</h4>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Bed 101-B • Computer Science</p>
-            <div style={{ fontSize: '0.875rem', padding: '0.5rem', backgroundColor: 'rgba(59, 130, 246, 0.1)', color: 'var(--color-primary-navy)', borderRadius: 'var(--radius-md)' }}>
-              Moved in on Sep 1
-            </div>
-          </Card>
-
-          <Card style={{ padding: '1.5rem', marginTop: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ padding: '0.75rem', backgroundColor: 'rgba(212, 175, 55, 0.1)', color: 'var(--color-secondary-gold)', borderRadius: '50%' }}>
-                <Key size={24} />
-              </div>
               <div>
-                <h4 style={{ fontWeight: 600 }}>Digital Keycard</h4>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Active for Main Entrance & Room 101</p>
+                <h3 className="text-sm uppercase tracking-wider font-semibold text-muted-foreground mb-3">Room Access</h3>
+                <div className="flex items-center gap-3 p-3 border border-border rounded-lg bg-background">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <div>
+                    <div className="font-medium text-sm">Digital Key</div>
+                    <div className="text-xs text-muted-foreground">Active on your device</div>
+                  </div>
+                </div>
               </div>
             </div>
-          </Card>
+
+          </div>
         </div>
       </div>
-    </StudentLayout>
+    </div>
   );
 }

@@ -1,65 +1,104 @@
-import React from 'react';
-import { PublicLayout } from '@/components/layouts/PublicLayout';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Navbar } from '@/components/marketing/Navbar';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 export default function ContactPage() {
   return (
-    <PublicLayout>
-      <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '5rem 2rem' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
-            Get in Touch
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.25rem', lineHeight: 1.8 }}>
-            Have a question about booking a room, or just want to know more about the HMS experience? Our team is here to help.
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
       
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '5rem 2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
-        <div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Contact Us</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
-            <div>
-              <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Email</strong>
-              <a href="mailto:hello@hms-premium.com" style={{ color: 'var(--color-primary-navy)', textDecoration: 'underline' }}>hello@hms-premium.com</a>
+      <main className="flex-1">
+        {/* Header */}
+        <section className="pt-8 pb-10 sm:pt-12 sm:pb-16 text-center px-4">
+          <span className="text-[var(--color-gold)] font-bold tracking-widest uppercase text-sm mb-4 block">Reach Out</span>
+          <h1 className="font-display text-5xl md:text-7xl mb-6">Get in Touch.</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Whether you have a question about our properties, pricing, or availability, our dedicated team is here to help you every step of the way.
+          </p>
+        </section>
+
+        {/* Content */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+            
+            {/* Contact Form */}
+            <div className="bg-card border border-border/50 rounded-3xl p-8 sm:p-12 shadow-sm">
+              <h3 className="font-display text-3xl mb-8">Send a Message</h3>
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">First Name</label>
+                    <input type="text" className="w-full h-12 bg-background border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] transition-shadow" placeholder="John" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Last Name</label>
+                    <input type="text" className="w-full h-12 bg-background border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] transition-shadow" placeholder="Doe" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Email Address</label>
+                  <input type="email" className="w-full h-12 bg-background border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] transition-shadow" placeholder="john@example.com" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Message</label>
+                  <textarea className="w-full h-32 bg-background border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] transition-shadow resize-none" placeholder="How can we help you?"></textarea>
+                </div>
+                <button type="button" className="w-full h-14 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
+                  Send Message <Send className="h-4 w-4" />
+                </button>
+              </form>
             </div>
-            <div>
-              <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Phone / WhatsApp</strong>
-              <a href="tel:+442071234567" style={{ color: 'var(--text-secondary)' }}>+44 20 7123 4567</a>
+
+            {/* Contact Details */}
+            <div className="flex flex-col justify-center space-y-12">
+              <div>
+                <h3 className="font-display text-3xl mb-8">Contact Information</h3>
+                <div className="space-y-8">
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <MapPin className="h-6 w-6 text-[var(--color-gold)]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Our Headquarters</h4>
+                      <p className="text-muted-foreground leading-relaxed">
+                        123 University Avenue<br />
+                        London, UK<br />
+                        WC1E 6BT
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Phone className="h-6 w-6 text-[var(--color-gold)]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Phone</h4>
+                      <p className="text-muted-foreground leading-relaxed">
+                        +44 (0) 20 7123 4567<br />
+                        Mon-Fri, 9am - 6pm
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Mail className="h-6 w-6 text-[var(--color-gold)]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Email</h4>
+                      <p className="text-muted-foreground leading-relaxed">
+                        hello@hms-premium.com<br />
+                        support@hms-premium.com
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Headquarters</strong>
-              <p style={{ color: 'var(--text-secondary)' }}>123 University Road,<br/>London, UK<br/>WC1E 6BT</p>
-            </div>
+
           </div>
-        </div>
-        
-        <div>
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <Input label="Full Name" placeholder="Jane Doe" required />
-            <Input label="Email Address" type="email" placeholder="jane@example.com" required />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', width: '100%' }}>
-              <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>Message</label>
-              <textarea 
-                rows={5} 
-                required
-                style={{ 
-                  width: '100%', 
-                  padding: '0.75rem 1rem', 
-                  fontFamily: 'var(--font-ui)', 
-                  fontSize: '1rem', 
-                  backgroundColor: 'var(--bg-secondary)', 
-                  border: '1px solid var(--border-strong)', 
-                  borderRadius: 'var(--radius-md)' 
-                }}
-              />
-            </div>
-            <Button type="submit" size="lg">Send Message</Button>
-          </form>
-        </div>
-      </div>
-    </PublicLayout>
+        </section>
+      </main>
+    </div>
   );
 }
